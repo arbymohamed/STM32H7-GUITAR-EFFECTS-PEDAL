@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guitar Pedal UI Mockup</title>
+    <style>
+        :root {
+            /* === COLOR PALETTE === */
+            
+            /* Backgrounds */
+            --bg-darkest: #0f0f1a;      /* Device screen */
+            --bg-dark: #1a1a2e;         /* Page background */
+            --bg-card: #1a1a3a;         /* Card gradient end */
+            --bg-card-light: #2a2a4a;   /* Card gradient start */
+            --bg-input: #0a0a15;        /* Input fields */
+            
+            /* Borders */
+            --border-dark: #333;        /* Device frame */
+            --border-medium: #3a3a5a;   /* Card borders */
+            --border-light: #444;       /* Dividers */
+            --border-highlight: #4a4a6a;/* Hover states */
+            
+            /* Primary Colors */
+            --primary: #00d4ff;         /* Cyan - main accent */
+            --primary-dark: #003344;    /* Cyan dark (active bg) */
+            --primary-darker: #001a22;  /* Cyan darker */
+            
+            /* Secondary Colors */
+            --secondary: #ff8800;       /* Orange - warnings, gate */
+            --secondary-dark: #cc6600;  /* Orange dark */
+            
+            /* Semantic Colors */
+            --success: #00cc66;         /* Green - enabled, save */
+            --success-dark: #009944;    /* Green dark */
+            --danger: #ff4444;          /* Red - delete, remove */
+            --danger-dark: #cc2222;     /* Red dark */
+            --warning: #ffaa00;         /* Yellow/amber */
+            
+            /* Text Colors */
+            --text-bright: #fff;        /* Primary text */
+            --text-normal: #eee;        /* Body text */
+            --text-muted: #888;         /* Secondary text */
+            --text-dim: #666;           /* Disabled/tertiary */
+            
+            /* Effect Type Colors */
+            --effect-drive: #ff6b35;    /* Overdrive/Distortion */
+            --effect-mod: #9b59b6;      /* Modulation (chorus, flanger, phaser) */
+            --effect-delay: #3498db;    /* Delay */
+            --effect-reverb: #1abc9c;   /* Reverb */
+            --effect-filter: #f1c40f;   /* Filter (wah, EQ) */
+            --effect-dynamics: #e74c3c; /* Compressor, gate */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-normal);
+            min-height: 100vh;
+        }
+
+        /* Simulate pedal screen dimensions (480x320 or similar) */
+        .pedal-screen {
+            width: 480px;
+            height: 320px;
+            margin: 20px auto;
+            background: var(--bg-darkest);
+            border: 3px solid var(--border-dark);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        /* Header bar */
+        .header {
+            background: linear-gradient(180deg, var(--bg-card-light) 0%, var(--bg-card) 100%);
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .header h1 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .header .status {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Page container - account for header (40px) and bottom nav (45px) */
+        .page {
+            display: none;
+            height: calc(100% - 85px);
+            padding: 10px;
+            padding-bottom: 5px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* ============== MAIN PRESET PAGE ============== */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 8px;
+            height: 100%;
+        }
+
+        .preset-btn {
+            background: linear-gradient(145deg, var(--bg-card-light) 0%, var(--bg-card) 100%);
+            border: 2px solid var(--border-medium);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        .preset-btn.active {
+            background: linear-gradient(145deg, var(--primary-dark) 0%, var(--primary-darker) 100%);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3), inset 0 0 20px rgba(0, 212, 255, 0.1);
+        }
+
+        .preset-btn.empty {
+            opacity: 0.4;
+            border-style: dashed;
+        }
+
+        .preset-btn .number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            opacity: 0.3;
+            position: absolute;
+            top: 5px;
+            left: 8px;
+        }
+
+        .preset-btn.active .number {
+            opacity: 0.6;
+        }
+
+        .preset-btn .name {
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+            padding: 0 5px;
+            color: var(--text-bright);
+        }
+
+        .preset-btn.empty .name {
+            color: var(--text-dim);
+            font-style: italic;
+        }
+
+        .preset-btn .effects-preview {
+            font-size: 8px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        .preset-btn.active .effects-preview {
+            color: var(--primary);
+        }
+
+        /* Active indicator LED */
+        .preset-btn .led {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border-dark);
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .preset-btn.active .led {
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success), 0 0 20px var(--success);
+        }
+
+        /* ============== EDIT PAGE ============== */
+        .edit-page {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .edit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .edit-header h2 {
+            font-size: 14px;
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .btn-secondary {
+            background: var(--border-medium);
+            color: var(--text-bright);
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .chain-area {
+            flex: 1;
+            background: var(--bg-darkest);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            overflow-y: auto;
+        }
+
+        .chain-title {
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .effect-chain {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .effect-chip {
+            background: linear-gradient(145deg, #2a4a3a 0%, #1a3a2a 100%);
+            border: 1px solid #3a6a4a;
+            border-radius: 15px;
+            padding: 5px 12px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .effect-chip.disabled {
+            opacity: 0.5;
+            border-style: dashed;
+        }
+
+        .effect-chip .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .effect-chip.disabled .dot {
+            background: var(--text-dim);
+        }
+
+        .add-effect-btn {
+            background: transparent;
+            border: 2px dashed var(--border-medium);
+            border-radius: 15px;
+            padding: 5px 12px;
+            font-size: 10px;
+            color: var(--text-dim);
+            cursor: pointer;
+        }
+
+        .add-effect-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Effect chip interactions */
+        .effect-chip {
+            background: linear-gradient(145deg, #2a4a3a 0%, #1a3a2a 100%);
+            border: 1px solid #3a6a4a;
+            border-radius: 15px;
+            padding: 5px 10px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
+        }
+
+        .effect-chip:hover {
+            border-color: var(--success);
+            transform: scale(1.05);
+        }
+
+        .effect-chip.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .effect-chip .remove-btn {
+            display: none;
+            width: 14px;
+            height: 14px;
+            background: var(--danger);
+            border-radius: 50%;
+            color: var(--text-bright);
+            font-size: 10px;
+            line-height: 14px;
+            text-align: center;
+            margin-left: 4px;
+        }
+
+        .effect-chip:hover .remove-btn {
+            display: block;
+        }
+
+        .effect-chip.disabled {
+            opacity: 0.5;
+            border-style: dashed;
+        }
+
+        .effect-chip .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+            cursor: pointer;
+        }
+
+        .effect-chip.disabled .dot {
+            background: var(--text-dim);
+        }
+
+        /* Add Effect Modal */
+        .effect-picker {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-card);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 15px;
+            width: 320px;
+            max-height: 250px;
+            display: none;
+            z-index: 100;
+        }
+
+        .effect-picker.show {
+            display: block;
+        }
+
+        .effect-picker h3 {
+            font-size: 13px;
+            margin-bottom: 12px;
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .effect-picker .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .effect-picker .close-btn:hover {
+            color: var(--text-bright);
+        }
+
+        .effect-category {
+            margin-bottom: 10px;
+        }
+
+        .effect-category-title {
+            font-size: 9px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        .effect-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .effect-option {
+            background: var(--bg-card-light);
+            border: 1px solid var(--border-medium);
+            border-radius: 12px;
+            padding: 6px 10px;
+            font-size: 10px;
+            color: #aaa;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .effect-option:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Effect Parameter Editor */
+        .param-editor {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-card);
+            border: 2px solid var(--success);
+            border-radius: 12px;
+            padding: 15px;
+            width: 300px;
+            display: none;
+            z-index: 100;
+        }
+
+        .param-editor.show {
+            display: block;
+        }
+
+        .param-editor h3 {
+            font-size: 13px;
+            margin-bottom: 5px;
+            color: var(--success);
+        }
+
+        .param-editor .effect-type {
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+        }
+
+        .param-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .param-row label {
+            font-size: 10px;
+            color: var(--text-muted);
+            width: 60px;
+        }
+
+        .param-row input[type="range"] {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 6px;
+            background: var(--bg-card-light);
+            border-radius: 3px;
+        }
+
+        .param-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--success);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .param-row .param-val {
+            font-size: 10px;
+            color: var(--success);
+            width: 50px;
+            text-align: right;
+        }
+
+        .param-editor-btns {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--text-bright);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #000;
+        }
+
+        /* Clickable setting boxes */
+        .setting-box {
+            flex: 1;
+            background: var(--bg-darkest);
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid transparent;
+        }
+
+        .setting-box:hover {
+            border-color: var(--primary);
+            background: var(--bg-card);
+        }
+
+        .setting-box h4 {
+            font-size: 9px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .setting-box .value {
+            font-size: 11px;
+            color: var(--text-bright);
+        }
+
+        .setting-box .status-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .setting-box .status-dot.on {
+            background: var(--success);
+            box-shadow: 0 0 6px var(--success);
+        }
+
+        .setting-box .status-dot.off {
+            background: var(--text-dim);
+        }
+
+        /* Gate Settings Dialog */
+        .gate-dialog {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-card);
+            border: 2px solid var(--secondary);
+            border-radius: 12px;
+            padding: 15px;
+            width: 280px;
+            display: none;
+            z-index: 100;
+        }
+
+        .gate-dialog.show {
+            display: block;
+        }
+
+        .gate-dialog h3 {
+            font-size: 13px;
+            margin-bottom: 12px;
+            color: var(--secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Confirmation Dialog */
+        .confirm-dialog {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-card);
+            border: 2px solid var(--danger);
+            border-radius: 12px;
+            padding: 20px;
+            width: 260px;
+            display: none;
+            z-index: 110;
+            text-align: center;
+        }
+
+        .confirm-dialog.show {
+            display: block;
+        }
+
+        .confirm-dialog p {
+            font-size: 12px;
+            margin-bottom: 15px;
+            color: var(--text-bright);
+        }
+
+        .confirm-dialog .btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        /* Settings section */
+        .settings-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .setting-box {
+            flex: 1;
+            background: var(--bg-darkest);
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        .setting-box h4 {
+            font-size: 9px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .setting-box .value {
+            font-size: 12px;
+            color: var(--text-bright);
+        }
+
+        /* Bottom nav */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-input);
+            display: flex;
+            border-top: 1px solid var(--border-dark);
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            font-size: 10px;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.1s;
+            border: none;
+            background: transparent;
+        }
+
+        .nav-btn:hover {
+            background: var(--bg-card);
+            color: var(--text-bright);
+        }
+
+        .nav-btn.active {
+            color: var(--primary);
+            background: var(--bg-card);
+        }
+
+        .nav-btn .icon {
+            font-size: 16px;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* Preset name input */
+        .preset-name-input {
+            background: var(--bg-input);
+            border: 1px solid var(--border-medium);
+            border-radius: 5px;
+            padding: 5px 10px;
+            color: var(--text-bright);
+            font-size: 12px;
+            width: 150px;
+        }
+
+        .preset-name-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Save dialog */
+        .save-dialog {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-card);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 20px;
+            width: 300px;
+            display: none;
+            z-index: 100;
+        }
+
+        .save-dialog.show {
+            display: block;
+        }
+
+        .save-dialog h3 {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .save-dialog input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-medium);
+            border-radius: 5px;
+            color: var(--text-bright);
+        }
+
+        .save-dialog .slot-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .save-dialog .slot-btn {
+            padding: 8px;
+            background: var(--bg-card-light);
+            border: 1px solid var(--border-medium);
+            border-radius: 5px;
+            color: var(--text-bright);
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .save-dialog .slot-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .save-dialog .slot-btn.selected {
+            background: var(--primary-dark);
+            border-color: var(--primary);
+        }
+
+        .dialog-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            z-index: 99;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        /* ============== AMP PAGE ============== */
+        .amp-page {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .amp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .amp-header h2 {
+            font-size: 14px;
+            color: var(--primary);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 22px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-medium);
+            transition: 0.3s;
+            border-radius: 22px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--text-muted);
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(22px);
+            background-color: var(--text-bright);
+        }
+
+        .amp-model-selector {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .model-btn {
+            flex: 1;
+            padding: 8px 4px;
+            background: var(--bg-card-light);
+            border: 1px solid var(--border-medium);
+            border-radius: 6px;
+            text-align: center;
+            font-size: 10px;
+            color: #aaa;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .model-btn:hover {
+            border-color: var(--primary);
+            color: var(--text-bright);
+        }
+
+        .model-btn.active {
+            background: var(--primary-dark);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .amp-knobs {
+            display: flex;
+            justify-content: space-around;
+            flex: 1;
+            padding: 10px 0;
+        }
+
+        .knob-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .knob-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .knob-value {
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .vertical-slider {
+            -webkit-appearance: none;
+            width: 80px;
+            height: 6px;
+            background: var(--bg-card-light);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .vertical-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        /* ============== CABINET PAGE ============== */
+        .cabinet-page {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cabinet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .cabinet-header h2 {
+            font-size: 14px;
+            color: var(--primary);
+        }
+
+        .cabinet-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .cabinet-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .cabinet-grid::-webkit-scrollbar-track {
+            background: var(--bg-card);
+            border-radius: 3px;
+        }
+
+        .cabinet-grid::-webkit-scrollbar-thumb {
+            background: var(--border-medium);
+            border-radius: 3px;
+        }
+
+        .cabinet-btn {
+            background: linear-gradient(145deg, var(--bg-card-light) 0%, var(--bg-card) 100%);
+            border: 1px solid var(--border-medium);
+            border-radius: 8px;
+            padding: 8px 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            min-height: 55px;
+        }
+
+        .cabinet-btn:hover {
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        .cabinet-btn.active {
+            background: linear-gradient(145deg, var(--primary-dark) 0%, var(--primary-darker) 100%);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+        }
+
+        .cab-icon {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .cab-name {
+            font-size: 8px;
+            text-align: center;
+            color: #aaa;
+        }
+
+        .cabinet-btn.active .cab-name {
+            color: var(--primary);
+        }
+
+        /* Info panel outside screen */
+        .info-panel {
+            max-width: 480px;
+            margin: 0 auto 20px;
+            padding: 15px;
+            background: var(--bg-card-light);
+            border-radius: 8px;
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .info-panel h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .info-panel ul {
+            margin-left: 20px;
+        }
+
+        .info-panel li {
+            margin-bottom: 5px;
+        }
+
+        .info-panel code {
+            background: var(--bg-card);
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: var(--success);
+        }
+    </style>
+</head>
+<body>
+    <div class="info-panel">
+        <h3>🎸 Guitar Pedal UI Mockup</h3>
+        <ul>
+            <li>Click a <strong>preset button</strong> to activate it</li>
+            <li>Go to <strong>Edit</strong> tab to modify the chain</li>
+            <li>Click <strong>Save Preset</strong> to save current chain to a slot</li>
+        </ul>
+    </div>
+
+    <div class="pedal-screen">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎸 DIY PEDAL</h1>
+            <span class="status" id="currentPresetDisplay">Preset 1: Clean Sparkle</span>
+        </div>
+
+        <!-- Main Presets Page -->
+        <div class="page active" id="presetsPage">
+            <div class="preset-grid">
+                <div class="preset-btn active" data-slot="0" onclick="selectPreset(0)">
+                    <div class="led"></div>
+                    <span class="number">1</span>
+                    <span class="name">Clean Sparkle</span>
+                    <span class="effects-preview">Comp → Chorus</span>
+                </div>
+                <div class="preset-btn" data-slot="1" onclick="selectPreset(1)">
+                    <div class="led"></div>
+                    <span class="number">2</span>
+                    <span class="name">Blues Crunch</span>
+                    <span class="effects-preview">Comp → OD</span>
+                </div>
+                <div class="preset-btn" data-slot="2" onclick="selectPreset(2)">
+                    <div class="led"></div>
+                    <span class="number">3</span>
+                    <span class="name">Classic Rock</span>
+                    <span class="effects-preview">OD → Delay</span>
+                </div>
+                <div class="preset-btn" data-slot="3" onclick="selectPreset(3)">
+                    <div class="led"></div>
+                    <span class="number">4</span>
+                    <span class="name">Heavy Metal</span>
+                    <span class="effects-preview">Comp → Dist</span>
+                </div>
+                <div class="preset-btn" data-slot="4" onclick="selectPreset(4)">
+                    <div class="led"></div>
+                    <span class="number">5</span>
+                    <span class="name">Ambient Clean</span>
+                    <span class="effects-preview">Chorus → Delay → Hall</span>
+                </div>
+                <div class="preset-btn" data-slot="5" onclick="selectPreset(5)">
+                    <div class="led"></div>
+                    <span class="number">6</span>
+                    <span class="name">Shimmer</span>
+                    <span class="effects-preview">Delay → Shimmer</span>
+                </div>
+                <div class="preset-btn" data-slot="6" onclick="selectPreset(6)">
+                    <div class="led"></div>
+                    <span class="number">7</span>
+                    <span class="name">Funk Machine</span>
+                    <span class="effects-preview">Comp → AutoWah</span>
+                </div>
+                <div class="preset-btn" data-slot="7" onclick="selectPreset(7)">
+                    <div class="led"></div>
+                    <span class="number">8</span>
+                    <span class="name">80s Lead</span>
+                    <span class="effects-preview">OD → Chorus → Dly → Plate</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Page -->
+        <div class="page" id="editPage">
+            <div class="edit-page">
+                <div class="edit-header">
+                    <input type="text" class="preset-name-input" value="Clean Sparkle" id="presetNameInput">
+                    <div>
+                        <button class="btn btn-secondary" onclick="showSaveDialog()">Save Preset</button>
+                    </div>
+                </div>
+
+                <div class="chain-area">
+                    <div class="chain-title">Effect Chain</div>
+                    <div class="effect-chain" id="effectChain">
+                        <div class="effect-chip">
+                            <span class="dot"></span>
+                            Compressor
+                        </div>
+                        <div class="effect-chip">
+                            <span class="dot"></span>
+                            Chorus
+                        </div>
+                        <button class="add-effect-btn">+ Add Effect</button>
+                    </div>
+                </div>
+
+                <div class="settings-row">
+                    <div class="setting-box" onclick="showPage('ampPage', 2)">
+                        <h4>Amp</h4>
+                        <div class="value" id="ampSummary"><span class="status-dot on"></span>Clean • 30%</div>
+                    </div>
+                    <div class="setting-box" onclick="showPage('cabinetPage', 3)">
+                        <h4>Cabinet</h4>
+                        <div class="value" id="cabSummary"><span class="status-dot on"></span>American Twin</div>
+                    </div>
+                    <div class="setting-box" onclick="showGateDialog()">
+                        <h4>Gate</h4>
+                        <div class="value" id="gateSummary"><span class="status-dot off"></span>Off</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Amp Page -->
+        <div class="page" id="ampPage">
+            <div class="amp-page">
+                <div class="amp-header">
+                    <h2>Amp Simulation</h2>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="ampEnabled" checked onchange="toggleAmp()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="amp-model-selector">
+                    <div class="model-btn active" onclick="selectAmpModel(0)">Clean</div>
+                    <div class="model-btn" onclick="selectAmpModel(1)">Crunch</div>
+                    <div class="model-btn" onclick="selectAmpModel(2)">High Gain</div>
+                    <div class="model-btn" onclick="selectAmpModel(3)">Fuzz</div>
+                    <div class="model-btn" onclick="selectAmpModel(4)">Acoustic</div>
+                </div>
+
+                <div class="amp-knobs">
+                    <div class="knob-group">
+                        <div class="knob-label">Gain</div>
+                        <input type="range" class="vertical-slider" min="0" max="100" value="30" id="ampGain">
+                        <div class="knob-value" id="ampGainVal">30%</div>
+                    </div>
+                    <div class="knob-group">
+                        <div class="knob-label">Bass</div>
+                        <input type="range" class="vertical-slider" min="0" max="100" value="50" id="ampBass">
+                        <div class="knob-value" id="ampBassVal">50%</div>
+                    </div>
+                    <div class="knob-group">
+                        <div class="knob-label">Mid</div>
+                        <input type="range" class="vertical-slider" min="0" max="100" value="50" id="ampMid">
+                        <div class="knob-value" id="ampMidVal">50%</div>
+                    </div>
+                    <div class="knob-group">
+                        <div class="knob-label">Treble</div>
+                        <input type="range" class="vertical-slider" min="0" max="100" value="60" id="ampTreble">
+                        <div class="knob-value" id="ampTrebleVal">60%</div>
+                    </div>
+                    <div class="knob-group">
+                        <div class="knob-label">Presence</div>
+                        <input type="range" class="vertical-slider" min="0" max="100" value="50" id="ampPresence">
+                        <div class="knob-value" id="ampPresenceVal">50%</div>
+                    </div>
+                    <div class="knob-group">
+                        <div class="knob-label">Master</div>
+                        <input type="range" class="vertical-slider" min="0" max="100" value="60" id="ampMaster">
+                        <div class="knob-value" id="ampMasterVal">60%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cabinet Page -->
+        <div class="page" id="cabinetPage">
+            <div class="cabinet-page">
+                <div class="cabinet-header">
+                    <h2>Cabinet IR</h2>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="cabEnabled" checked onchange="toggleCabinet()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="cabinet-grid">
+                    <div class="cabinet-btn active" onclick="selectCabinet(0)">
+                        <span class="cab-icon">🔊</span>
+                        <span class="cab-name">Marshall 1960</span>
+                    </div>
+                    <div class="cabinet-btn" onclick="selectCabinet(1)">
+                        <span class="cab-icon">🔊</span>
+                        <span class="cab-name">American Twin</span>
+                    </div>
+                    <div class="cabinet-btn" onclick="selectCabinet(2)">
+                        <span class="cab-icon">🔊</span>
+                        <span class="cab-name">British Alnico</span>
+                    </div>
+                    <div class="cabinet-btn" onclick="selectCabinet(3)">
+                        <span class="cab-icon">🔊</span>
+                        <span class="cab-name">British 4x12</span>
+                    </div>
+                    <div class="cabinet-btn" onclick="selectCabinet(4)">
+                        <span class="cab-icon">🔊</span>
+                        <span class="cab-name">Brown Deluxe</span>
+                    </div>
+                    <div class="cabinet-btn" onclick="selectCabinet(5)">
+                        <span class="cab-icon">🔊</span>
+                        <span class="cab-name">Magma Vintage</span>
+                    </div>
+                    <div class="cabinet-btn" onclick="selectCabinet(6)">
+                        <span class="cab-icon">🔊</span>
+                        <span class="cab-name">Modern Boutique</span>
+                    </div>
+                    <div class="cabinet-btn" onclick="selectCabinet(7)">
+                        <span class="cab-icon">🔊</span>
+                        <span class="cab-name">Tweed Combo</span>
+                    </div>
+                    <div class="cabinet-btn" onclick="selectCabinet(8)">
+                        <span class="cab-icon">🔊</span>
+                        <span class="cab-name">Vox AC30</span>
+                    </div>
+                    <div class="cabinet-btn" onclick="selectCabinet(9)">
+                        <span class="cab-icon">🔊</span>
+                        <span class="cab-name">JCM900</span>
+                    </div>
+                    <div class="cabinet-btn" onclick="selectCabinet(10)">
+                        <span class="cab-icon">🔊</span>
+                        <span class="cab-name">Orange</span>
+                    </div>
+                    <div class="cabinet-btn" onclick="selectCabinet(11)">
+                        <span class="cab-icon">🔊</span>
+                        <span class="cab-name">Vintage Marshall</span>
+                    </div>
+                    <div class="cabinet-btn" onclick="selectCabinet(12)">
+                        <span class="cab-icon">🔊</span>
+                        <span class="cab-name">JMP Plexi</span>
+                    </div>
+                    <div class="cabinet-btn" onclick="selectCabinet(13)">
+                        <span class="cab-icon">🔊</span>
+                        <span class="cab-name">GuitarHack Edge</span>
+                    </div>
+                    <div class="cabinet-btn" onclick="selectCabinet(14)">
+                        <span class="cab-icon">🔊</span>
+                        <span class="cab-name">faIR Fredman</span>
+                    </div>
+                    <div class="cabinet-btn" onclick="selectCabinet(15)">
+                        <span class="cab-icon">🔊</span>
+                        <span class="cab-name">London City</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <button class="nav-btn active" onclick="showPage('presetsPage', 0)">
+                <span class="icon">🎹</span>
+                Presets
+            </button>
+            <button class="nav-btn" onclick="showPage('editPage', 1)">
+                <span class="icon">🔧</span>
+                Edit
+            </button>
+            <button class="nav-btn" onclick="showPage('ampPage', 2)">
+                <span class="icon">🎚️</span>
+                Amp
+            </button>
+            <button class="nav-btn" onclick="showPage('cabinetPage', 3)">
+                <span class="icon">🔊</span>
+                Cabinet
+            </button>
+        </div>
+
+        <!-- Save Dialog Overlay -->
+        <div class="overlay" id="overlay" onclick="hideAllDialogs()"></div>
+        
+        <!-- Save Preset Dialog -->
+        <div class="save-dialog" id="saveDialog">
+            <h3>Save Preset</h3>
+            <input type="text" placeholder="Preset Name" id="savePresetName" value="Clean Sparkle">
+            <div class="slot-grid">
+                <button class="slot-btn selected" onclick="selectSlot(0)">1</button>
+                <button class="slot-btn" onclick="selectSlot(1)">2</button>
+                <button class="slot-btn" onclick="selectSlot(2)">3</button>
+                <button class="slot-btn" onclick="selectSlot(3)">4</button>
+                <button class="slot-btn" onclick="selectSlot(4)">5</button>
+                <button class="slot-btn" onclick="selectSlot(5)">6</button>
+                <button class="slot-btn" onclick="selectSlot(6)">7</button>
+                <button class="slot-btn" onclick="selectSlot(7)">8</button>
+            </div>
+            <div class="dialog-btns">
+                <button class="btn btn-secondary" onclick="hideAllDialogs()">Cancel</button>
+                <button class="btn btn-primary" onclick="savePreset()">Save</button>
+            </div>
+        </div>
+
+        <!-- Add Effect Picker Dialog -->
+        <div class="effect-picker" id="effectPicker">
+            <h3>
+                Add Effect
+                <button class="close-btn" onclick="hideAllDialogs()">×</button>
+            </h3>
+            <div class="effect-category">
+                <div class="effect-category-title">Gain / Drive</div>
+                <div class="effect-list">
+                    <div class="effect-option" onclick="addEffect('Overdrive')">Overdrive</div>
+                    <div class="effect-option" onclick="addEffect('Distortion')">Distortion</div>
+                    <div class="effect-option" onclick="addEffect('Compressor')">Compressor</div>
+                </div>
+            </div>
+            <div class="effect-category">
+                <div class="effect-category-title">Modulation</div>
+                <div class="effect-list">
+                    <div class="effect-option" onclick="addEffect('Chorus')">Chorus</div>
+                    <div class="effect-option" onclick="addEffect('Flanger')">Flanger</div>
+                    <div class="effect-option" onclick="addEffect('Phaser')">Phaser</div>
+                    <div class="effect-option" onclick="addEffect('Tremolo')">Tremolo</div>
+                    <div class="effect-option" onclick="addEffect('AutoWah')">AutoWah</div>
+                </div>
+            </div>
+            <div class="effect-category">
+                <div class="effect-category-title">Time / Reverb</div>
+                <div class="effect-list">
+                    <div class="effect-option" onclick="addEffect('Delay')">Delay</div>
+                    <div class="effect-option" onclick="addEffect('Hall Reverb')">Hall Reverb</div>
+                    <div class="effect-option" onclick="addEffect('Plate Reverb')">Plate Reverb</div>
+                    <div class="effect-option" onclick="addEffect('Spring Reverb')">Spring Reverb</div>
+                    <div class="effect-option" onclick="addEffect('Shimmer Reverb')">Shimmer</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Effect Parameter Editor Dialog -->
+        <div class="param-editor" id="paramEditor">
+            <h3 id="paramEditorTitle">Compressor</h3>
+            <div class="effect-type" id="paramEditorType">Dynamics</div>
+            <div id="paramSliders">
+                <!-- Dynamically generated -->
+            </div>
+            <div class="param-editor-btns">
+                <button class="btn btn-danger" onclick="removeSelectedEffect()">Remove</button>
+                <button class="btn btn-secondary" onclick="toggleSelectedEffect()">Bypass</button>
+                <button class="btn btn-success" onclick="hideAllDialogs()">Done</button>
+            </div>
+        </div>
+
+        <!-- Confirm Delete Dialog -->
+        <div class="confirm-dialog" id="confirmDialog">
+            <p id="confirmMessage">Remove this effect from the chain?</p>
+            <div class="btns">
+                <button class="btn btn-secondary" onclick="hideAllDialogs()">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmRemoveEffect()">Remove</button>
+            </div>
+        </div>
+
+        <!-- Gate Settings Dialog -->
+        <div class="gate-dialog" id="gateDialog">
+            <h3>
+                Noise Gate
+                <label class="toggle-switch">
+                    <input type="checkbox" id="gateEnabled" onchange="toggleGate()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </h3>
+            <div class="param-row">
+                <label>Threshold</label>
+                <input type="range" min="-60" max="0" value="-40" id="gateThreshold" oninput="updateGateParam('threshold', this.value)">
+                <span class="param-val" id="gateThresholdVal">-40dB</span>
+            </div>
+            <div class="param-row">
+                <label>Ratio</label>
+                <input type="range" min="1" max="20" value="10" id="gateRatio" oninput="updateGateParam('ratio', this.value)">
+                <span class="param-val" id="gateRatioVal">10:1</span>
+            </div>
+            <div class="param-editor-btns">
+                <button class="btn btn-success" onclick="hideAllDialogs()">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <h3>💡 How it maps to your code</h3>
+        <ul>
+            <li>Tapping a preset button → <code>PresetManager_Load(slot)</code></li>
+            <li>Save Preset button → <code>PresetManager_Save(slot)</code></li>
+            <li>Add Effect → <code>MultiEffects_AddEffect(type)</code></li>
+            <li>Click effect chip → Edit parameters or remove</li>
+            <li>The preset stores: effects, params, amp, cabinet, gate, levels</li>
+        </ul>
+    </div>
+
+    <script>
+        // Effect parameter definitions (mirrors your multieffects_manager.c)
+        const effectParams = {
+            'Delay': [
+                { name: 'Time', min: 0, max: 800, unit: 'ms', default: 300 },
+                { name: 'Feedback', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'Tone', min: 0, max: 100, unit: '%', default: 70 },
+                { name: 'Mix', min: 0, max: 100, unit: '%', default: 30 }
+            ],
+            'Overdrive': [
+                { name: 'Gain', min: 1, max: 10, unit: '', default: 5 },
+                { name: 'Level', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'Tone', min: 0, max: 100, unit: '%', default: 50 }
+            ],
+            'Distortion': [
+                { name: 'Gain', min: 1, max: 20, unit: '', default: 10 },
+                { name: 'Level', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'Tone', min: 0, max: 100, unit: '%', default: 50 }
+            ],
+            'Chorus': [
+                { name: 'Rate', min: 0.1, max: 5, unit: 'Hz', default: 1.2 },
+                { name: 'Depth', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'Mix', min: 0, max: 100, unit: '%', default: 50 }
+            ],
+            'Flanger': [
+                { name: 'Rate', min: 0.1, max: 5, unit: 'Hz', default: 0.5 },
+                { name: 'Depth', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'Feedback', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'Delay', min: 1, max: 7, unit: 'ms', default: 5 }
+            ],
+            'Phaser': [
+                { name: 'Rate', min: 0.1, max: 5, unit: 'Hz', default: 0.5 },
+                { name: 'Depth', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'Feedback', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'Freq', min: 200, max: 4000, unit: 'Hz', default: 2000 }
+            ],
+            'Tremolo': [
+                { name: 'Rate', min: 0.1, max: 20, unit: 'Hz', default: 5 },
+                { name: 'Depth', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'Mix', min: 0, max: 100, unit: '%', default: 50 }
+            ],
+            'AutoWah': [
+                { name: 'Wah', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'Sensitivity', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'Mix', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'Output', min: 50, max: 300, unit: '%', default: 175 }
+            ],
+            'Compressor': [
+                { name: 'Threshold', min: -60, max: 0, unit: 'dB', default: -20 },
+                { name: 'Ratio', min: 1, max: 20, unit: ':1', default: 4 },
+                { name: 'Attack', min: 0.1, max: 100, unit: 'ms', default: 10 },
+                { name: 'Release', min: 10, max: 1000, unit: 'ms', default: 150 }
+            ],
+            'Hall Reverb': [
+                { name: 'Time', min: 0.1, max: 10, unit: 's', default: 3 },
+                { name: 'Damping', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'PreDelay', min: 0, max: 100, unit: 'ms', default: 20 },
+                { name: 'Mix', min: 0, max: 100, unit: '%', default: 40 }
+            ],
+            'Plate Reverb': [
+                { name: 'Time', min: 0.1, max: 10, unit: 's', default: 2 },
+                { name: 'Damping', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'Tone', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'Mix', min: 0, max: 100, unit: '%', default: 35 }
+            ],
+            'Spring Reverb': [
+                { name: 'Tension', min: 0, max: 100, unit: '%', default: 60 },
+                { name: 'Decay', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'Tone', min: 0, max: 100, unit: '%', default: 50 },
+                { name: 'Mix', min: 0, max: 100, unit: '%', default: 35 }
+            ],
+            'Shimmer Reverb': [
+                { name: 'Time', min: 0.1, max: 10, unit: 's', default: 5 },
+                { name: 'Depth', min: 0, max: 5, unit: '%', default: 2 },
+                { name: 'Rate', min: 0.1, max: 5, unit: 'Hz', default: 0.5 },
+                { name: 'Mix', min: 0, max: 100, unit: '%', default: 50 }
+            ]
+        };
+
+        const effectCategories = {
+            'Overdrive': 'Gain/Drive',
+            'Distortion': 'Gain/Drive',
+            'Compressor': 'Dynamics',
+            'Chorus': 'Modulation',
+            'Flanger': 'Modulation',
+            'Phaser': 'Modulation',
+            'Tremolo': 'Modulation',
+            'AutoWah': 'Filter',
+            'Delay': 'Time',
+            'Hall Reverb': 'Reverb',
+            'Plate Reverb': 'Reverb',
+            'Spring Reverb': 'Reverb',
+            'Shimmer Reverb': 'Reverb'
+        };
+
+        // Current effect chain with parameters
+        let currentChain = [
+            { name: 'Compressor', enabled: true, params: [-20, 4, 10, 150] },
+            { name: 'Chorus', enabled: true, params: [1.2, 50, 50] }
+        ];
+
+        // Preset data (simulating what's in preset_manager.c)
+        const presets = [
+            { name: "Clean Sparkle", effects: ["Compressor", "Chorus"], amp: "Clean", cabinet: "American Twin" },
+            { name: "Blues Crunch", effects: ["Compressor", "Overdrive"], amp: "Crunch", cabinet: "Brown Deluxe" },
+            { name: "Classic Rock", effects: ["Overdrive", "Delay"], amp: "British", cabinet: "British 4x12" },
+            { name: "Heavy Metal", effects: ["Compressor", "Distortion"], amp: "High Gain", cabinet: "Modern Boutique" },
+            { name: "Ambient Clean", effects: ["Chorus", "Delay", "Hall Reverb"], amp: "Clean", cabinet: "Vox AC30" },
+            { name: "Shimmer", effects: ["Delay", "Shimmer Reverb"], amp: "Clean", cabinet: "British Alnico" },
+            { name: "Funk Machine", effects: ["Compressor", "AutoWah"], amp: "Clean", cabinet: "Tweed Combo" },
+            { name: "80s Lead", effects: ["Overdrive", "Chorus", "Delay", "Plate Reverb"], amp: "Crunch", cabinet: "Vintage Marshall" }
+        ];
+
+        let currentPreset = 0;
+        let selectedSaveSlot = 0;
+        let currentAmpModel = 0;
+        let currentCabinet = 1;
+        let selectedEffectIndex = -1;
+
+        // ==================== PRESET FUNCTIONS ====================
+        function selectPreset(slot) {
+            if (presets[slot].empty) return;
+            
+            currentPreset = slot;
+            
+            document.querySelectorAll('.preset-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === slot);
+            });
+
+            document.getElementById('currentPresetDisplay').textContent = 
+                `Preset ${slot + 1}: ${presets[slot].name}`;
+
+            document.getElementById('presetNameInput').value = presets[slot].name;
+            
+            // Load effects into chain
+            currentChain = presets[slot].effects.map(name => ({
+                name: name,
+                enabled: true,
+                params: effectParams[name] ? effectParams[name].map(p => p.default) : []
+            }));
+            
+            renderEffectChain();
+            console.log(`PresetManager_Load(${slot}); // "${presets[slot].name}"`);
+        }
+
+        // ==================== EFFECT CHAIN FUNCTIONS ====================
+        function renderEffectChain() {
+            const chain = document.getElementById('effectChain');
+            
+            if (currentChain.length === 0) {
+                chain.innerHTML = `
+                    <span style="color:#666;font-size:11px;">No effects - tap + to add</span>
+                    <button class="add-effect-btn" onclick="showEffectPicker()">+ Add Effect</button>
+                `;
+            } else {
+                chain.innerHTML = currentChain.map((eff, i) => `
+                    <div class="effect-chip ${eff.enabled ? '' : 'disabled'}" onclick="editEffect(${i})">
+                        <span class="dot" onclick="event.stopPropagation(); toggleEffect(${i})"></span>
+                        ${eff.name}
+                        <span class="remove-btn" onclick="event.stopPropagation(); showRemoveConfirm(${i})">×</span>
+                    </div>
+                `).join('') + `<button class="add-effect-btn" onclick="showEffectPicker()">+ Add</button>`;
+            }
+            
+            // Update preset preview
+            updatePresetPreview();
+        }
+
+        function updatePresetPreview() {
+            const preview = currentChain.length > 0 
+                ? currentChain.map(e => e.name.replace(' Reverb', '').substring(0, 6)).join(' → ')
+                : '—';
+            
+            const btn = document.querySelector(`[data-slot="${currentPreset}"]`);
+            if (btn) {
+                btn.querySelector('.effects-preview').textContent = preview;
+            }
+        }
+
+        function toggleEffect(index) {
+            currentChain[index].enabled = !currentChain[index].enabled;
+            renderEffectChain();
+            console.log(`MultiEffects_ToggleEffect(${index});`);
+        }
+
+        // ==================== ADD EFFECT ====================
+        function showEffectPicker() {
+            if (currentChain.length >= 8) {
+                alert('Maximum 8 effects allowed!');
+                return;
+            }
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('effectPicker').classList.add('show');
+        }
+
+        function addEffect(name) {
+            const params = effectParams[name] ? effectParams[name].map(p => p.default) : [];
+            currentChain.push({ name: name, enabled: true, params: params });
+            
+            renderEffectChain();
+            hideAllDialogs();
+            
+            console.log(`MultiEffects_AddEffect(EFFECT_${name.toUpperCase().replace(' ', '_')});`);
+        }
+
+        // ==================== EDIT EFFECT ====================
+        function editEffect(index) {
+            selectedEffectIndex = index;
+            const eff = currentChain[index];
+            const params = effectParams[eff.name] || [];
+            
+            document.getElementById('paramEditorTitle').textContent = eff.name;
+            document.getElementById('paramEditorType').textContent = effectCategories[eff.name] || 'Effect';
+            
+            const slidersDiv = document.getElementById('paramSliders');
+            slidersDiv.innerHTML = params.map((p, i) => `
+                <div class="param-row">
+                    <label>${p.name}</label>
+                    <input type="range" min="${p.min}" max="${p.max}" 
+                           value="${eff.params[i] || p.default}" 
+                           step="${(p.max - p.min) / 100}"
+                           oninput="updateParamValue(${i}, this.value, '${p.unit}')">
+                    <span class="param-val" id="paramVal${i}">${formatValue(eff.params[i] || p.default, p.unit)}</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('paramEditor').classList.add('show');
+        }
+
+        function updateParamValue(paramIndex, value, unit) {
+            currentChain[selectedEffectIndex].params[paramIndex] = parseFloat(value);
+            document.getElementById(`paramVal${paramIndex}`).textContent = formatValue(value, unit);
+            console.log(`MultiEffects_SetEffectParam(${selectedEffectIndex}, ${paramIndex}, ${value}f);`);
+        }
+
+        function formatValue(val, unit) {
+            const num = parseFloat(val);
+            if (unit === 'ms' || unit === 'Hz') return num.toFixed(0) + unit;
+            if (unit === 'dB') return num.toFixed(0) + unit;
+            if (unit === ':1') return num.toFixed(1) + unit;
+            if (unit === 's') return num.toFixed(1) + unit;
+            if (unit === '%') return num.toFixed(0) + '%';
+            return num.toFixed(1);
+        }
+
+        function toggleSelectedEffect() {
+            if (selectedEffectIndex >= 0) {
+                toggleEffect(selectedEffectIndex);
+            }
+        }
+
+        // ==================== REMOVE EFFECT ====================
+        function showRemoveConfirm(index) {
+            selectedEffectIndex = index;
+            document.getElementById('confirmMessage').textContent = 
+                `Remove "${currentChain[index].name}" from the chain?`;
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('confirmDialog').classList.add('show');
+        }
+
+        function removeSelectedEffect() {
+            showRemoveConfirm(selectedEffectIndex);
+        }
+
+        function confirmRemoveEffect() {
+            if (selectedEffectIndex >= 0) {
+                console.log(`MultiEffects_RemoveEffect(${selectedEffectIndex});`);
+                currentChain.splice(selectedEffectIndex, 1);
+                selectedEffectIndex = -1;
+                renderEffectChain();
+            }
+            hideAllDialogs();
+        }
+
+        // ==================== DIALOG HELPERS ====================
+        function hideAllDialogs() {
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('saveDialog').classList.remove('show');
+            document.getElementById('effectPicker').classList.remove('show');
+            document.getElementById('paramEditor').classList.remove('show');
+            document.getElementById('confirmDialog').classList.remove('show');
+            document.getElementById('gateDialog').classList.remove('show');
+        }
+
+        function showGateDialog() {
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('gateDialog').classList.add('show');
+        }
+
+        function toggleGate() {
+            updateGateSummary();
+        }
+
+        function updateGateParam(param, value) {
+            if (param === 'threshold') {
+                document.getElementById('gateThresholdVal').textContent = value + 'dB';
+            } else if (param === 'ratio') {
+                document.getElementById('gateRatioVal').textContent = value + ':1';
+            }
+            updateGateSummary();
+        }
+
+        function updateGateSummary() {
+            const enabled = document.getElementById('gateEnabled').checked;
+            const threshold = document.getElementById('gateThreshold').value;
+            const summary = document.getElementById('gateSummary');
+            const dot = summary.querySelector('.status-dot');
+            
+            if (enabled) {
+                dot.classList.remove('off');
+                dot.classList.add('on');
+                summary.lastChild.textContent = threshold + 'dB';
+            } else {
+                dot.classList.remove('on');
+                dot.classList.add('off');
+                summary.lastChild.textContent = 'Off';
+            }
+        }
+
+        function showPage(pageId, navIndex) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+
+            document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === navIndex);
+            });
+        }
+
+        // ==================== SAVE PRESET ====================
+        function showSaveDialog() {
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('saveDialog').classList.add('show');
+            document.getElementById('savePresetName').value = document.getElementById('presetNameInput').value;
+        }
+
+        function selectSlot(slot) {
+            selectedSaveSlot = slot;
+            document.querySelectorAll('.slot-btn').forEach((btn, i) => {
+                btn.classList.toggle('selected', i === slot);
+            });
+        }
+
+        function savePreset() {
+            const name = document.getElementById('savePresetName').value;
+            
+            presets[selectedSaveSlot].name = name;
+            presets[selectedSaveSlot].effects = currentChain.map(e => e.name);
+            presets[selectedSaveSlot].empty = false;
+            
+            const btn = document.querySelector(`[data-slot="${selectedSaveSlot}"]`);
+            if (btn) {
+                btn.querySelector('.name').textContent = name;
+                btn.classList.remove('empty');
+                btn.querySelector('.effects-preview').textContent = 
+                    currentChain.map(e => e.name.substring(0, 6)).join(' → ') || '—';
+            }
+
+            hideAllDialogs();
+            console.log(`PresetManager_SetName(${selectedSaveSlot}, "${name}");`);
+            console.log(`PresetManager_Save(${selectedSaveSlot});`);
+        }
+
+        // ==================== AMP CONTROLS ====================
+        function toggleAmp() {
+            const enabled = document.getElementById('ampEnabled').checked;
+            console.log(`GuitarPedal_EnableAmp(${enabled});`);
+        }
+
+        function selectAmpModel(model) {
+            currentAmpModel = model;
+            document.querySelectorAll('.model-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === model);
+            });
+            const models = ['Clean', 'Crunch', 'High Gain', 'Fuzz', 'Acoustic'];
+            console.log(`GuitarPedal_SetAmpModel(${model}); // ${models[model]}`);
+        }
+
+        // ==================== CABINET CONTROLS ====================
+        function toggleCabinet() {
+            const enabled = document.getElementById('cabEnabled').checked;
+            console.log(`GuitarPedal_EnableCabinet(${enabled});`);
+        }
+
+        function selectCabinet(index) {
+            currentCabinet = index;
+            document.querySelectorAll('.cabinet-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+            console.log(`GuitarPedal_SetCabinet(${index});`);
+        }
+
+        // ==================== AMP SLIDERS ====================
+        document.querySelectorAll('.vertical-slider').forEach(slider => {
+            slider.addEventListener('input', function() {
+                const id = this.id;
+                const val = this.value;
+                document.getElementById(id + 'Val').textContent = val + '%';
+                
+                const funcMap = {
+                    'ampGain': 'GuitarPedal_SetAmpGain',
+                    'ampBass': 'GuitarPedal_SetAmpBass',
+                    'ampMid': 'GuitarPedal_SetAmpMid',
+                    'ampTreble': 'GuitarPedal_SetAmpTreble',
+                    'ampPresence': 'GuitarPedal_SetAmpPresence',
+                    'ampMaster': 'GuitarPedal_SetAmpMaster'
+                };
+                
+                if (funcMap[id]) {
+                    console.log(`${funcMap[id]}(${(val/100).toFixed(2)}f);`);
+                }
+            });
+        });
+
+        // Initialize
+        renderEffectChain();
+    </script>
+</body>
+</html>
