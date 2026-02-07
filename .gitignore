@@ -1,0 +1,33 @@
+# STM32CubeIDE build outputs
+Debug/
+Release/
+
+# Build artifacts
+*.o
+*.obj
+*.a
+*.lib
+*.elf
+*.map
+*.list
+*.d
+*.su
+*.i
+*.s
+*.lst
+
+# Generated binaries
+*.hex
+*.bin
+
+# Temporary/editor files
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+
+# OS junk
+.DS_Store
+Thumbs.db
